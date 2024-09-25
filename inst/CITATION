@@ -1,0 +1,13 @@
+citHeader("To cite Rvisdiff in publications, please use:")
+
+bibentry(bibtype = "Article",
+  author = c(as.person("David Barrios"),
+             as.person("Carlos Prieto")),
+  title = "Rvisdiff: R package for interactive differential expression visualization",
+  journal = "Frontiers in Bioinformatics",
+  volume = 4,
+  year = "2024",
+  doi = "10.3389/fbinf.2024.1349205",
+  url = "https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2024.1349205",
+  textVersion = "Barrios, D. & Prieto, C. Rvisdiff: R package for interactive differential expression visualization. Frontiers in Bioinformatics (2024). doi:10.3389/fbinf.2024.1349205"
+)

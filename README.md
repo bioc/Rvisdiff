@@ -1,6 +1,6 @@
 # Rvisdiff
 
-Rvisdiff is an R/Bioconductor package which generates an interactive interface for the interpretation of differential expression results. It generates a local Web page which enables the exploration of statistical analysis results with the generation of auto-analytical visualizations. The package supports as input the output of popular differential expression packages such as DESeq2, EdgeR and limma.
+Rvisdiff is an R/Bioconductor package which generates an interactive interface for the interpretation of differential analysis tests results. It generates a local Web page which enables the exploration of statistical analysis results with the generation of auto-analytical visualizations. The package supports as input the output of popular differential expression packages such as DESeq2, EdgeR and limma.
 
 # Install
 

@@ -53,11 +53,11 @@ wilcox <- data.frame(genes = rownames(countdata), statistic = stat,
 normalized <- edgeR::cpm(countdata)
 normalized <- as.data.frame(normalized)
 normalized$genes <- rownames(normalized)
-DEreport(wilcox, NULL, coldata$dex, normalized = normalized, genes="genes",
+DEreport(wilcox, NULL, coldata$dex, normalized = normalized, variables="genes",
 pvalue="pValue", padj = "pAdjust", stat = "statistic",
 baseMean="expMean", log2FoldChange="log2FC")
 
 ### Missing columns tests
 colnames(wilcox) <- c("genes","missing1","missing2","missing3","missing4","missing5")
-DEreport(wilcox, NULL, coldata$dex, normalized = normalized, genes="genes")
+DEreport(wilcox, NULL, coldata$dex, normalized = normalized, variables="genes")
 

@@ -46,9 +46,9 @@ var groups = false,
     rows = false,
     cols = false,
     plotpos = false,
-    genes = false,
+    variables = false,
     idx = {
-      genes: 0,
+      variables: 0,
       expMean: null,
       log2FC: null,
       pvalue: null,
@@ -85,9 +85,9 @@ window.onload = function(){
       idx[n] = cols.indexOf(json.names[i-1]);
   });
 
-  d3.select("#information").text(results.filter(function(d){ return d[idx.padj]<cutoff; }).length + " significant genes of " + results.length);
+  d3.select("#information").text(results.filter(function(d){ return d[idx.padj]<cutoff; }).length + " significant variables of " + results.length);
 
-  plotpos = results.map(function(d){ return { gene:d[idx.genes]}; });
+  plotpos = results.map(function(d){ return { variable:d[idx.variables]}; });
   render_plots();
   displayTable($('#table'),results,cols);
   $(".loading").remove();
@@ -100,7 +100,7 @@ window.onload = function(){
 
 window.onresize = function(){
   render_plots();
-  filter_cpms(genes);
+  filter_cpms(variables);
 }
 
 function render_plots(){
@@ -121,25 +121,25 @@ function render_plots(){
 function filter_cpms(filter) {
   var highlight = [];
 
-  $("p.caption > .first-genes").addClass("hidden");
+  $("p.caption > .first-variables").addClass("hidden");
 
   if(!filter || !filter.length) {
     filter = results.filter(function(d){ return d[idx.padj]<cutoff; });
     if(!filter.length)
       filter = results;
     else
-      highlight = filter.map(function(d){ return d[idx.genes]; });
+      highlight = filter.map(function(d){ return d[idx.variables]; });
   }else
-    highlight = filter.map(function(d){ return d[idx.genes]; });
+    highlight = filter.map(function(d){ return d[idx.variables]; });
 
   filter = filter.sort(function(a,b){ return a[idx.pvalue]-b[idx.pvalue]; });
   if(filter.length>100){
-    $("p.caption > .first-genes").removeClass("hidden");
+    $("p.caption > .first-variables").removeClass("hidden");
     filter = filter.slice(0,100);
   }
 
   plotpos.forEach(function(d){
-    if(highlight.indexOf(d.gene)!=-1)
+    if(highlight.indexOf(d.variable)!=-1)
       d.selected = true;
     else
       delete d.selected;
@@ -149,9 +149,9 @@ function filter_cpms(filter) {
 
   if(cpms){
 
-    var indices = filter.map(function(d){ return rows.indexOf(d[idx.genes]); }).filter(function(d){ return d!=-1; });
+    var indices = filter.map(function(d){ return rows.indexOf(d[idx.variables]); }).filter(function(d){ return d!=-1; });
 
-    var frows = filter.map(function(d){ return d[idx.genes]; }),
+    var frows = filter.map(function(d){ return d[idx.variables]; }),
         data = indices.map(function(d){ return cpms[d]; }),
         dicGroups = groups ? groups.map(function(d){ return groupnames.indexOf(d); }) : false;
     linechart(frows,samples,data,dicGroups);
@@ -162,9 +162,9 @@ function filter_cpms(filter) {
     boxplot(frows,samples,boxdata,dicGroups);
 
     filter = filter.sort(function(a,b){ return a[idx.log2FC]-b[idx.log2FC]; });
-    indices = filter.map(function(d){ return rows.indexOf(d[idx.genes]); }).filter(function(d){ return d!=-1; });
+    indices = filter.map(function(d){ return rows.indexOf(d[idx.variables]); }).filter(function(d){ return d!=-1; });
 
-    frows = filter.map(function(d){ return d[idx.genes]; });
+    frows = filter.map(function(d){ return d[idx.variables]; });
     data = indices.map(function(d){ return cpms[d]; });
     heatmap(frows,samples,data,groups,true);
   }
@@ -174,13 +174,13 @@ function displayTable(sel, data, cols){
 
       selectableTable(sel, data, cols, idx.pvalue+1,
         function(table){
-          genes = table.rows( { selected: true } ).data();
-          filter_cpms(genes);
+          variables = table.rows( { selected: true } ).data();
+          filter_cpms(variables);
         });
 
       sel.find('tbody').on("mouseover", "tr", function(){
-        var gene = $(this).find('td:nth-child(2)').text(),
-            pos = plotpos.filter(function(d){ return d.gene==gene; })[0];
+        var variable = $(this).find('td:nth-child(2)').text(),
+            pos = plotpos.filter(function(d){ return d.variable==variable; })[0];
         ['volcano','maplot'].forEach(function(d){
           var marker = d3.select("div#"+d+" .marker");
           marker
@@ -361,7 +361,7 @@ var yAxis = d3.svg.axis()
       if(matches.length){
         var txt = [];
         matches.forEach(function(d){
-          txt.push(d.gene+" ("+formatter(x.invert(d[id].x))+","+formatter(y.invert(d[id].y))+")");
+          txt.push(d.variable+" ("+formatter(x.invert(d[id].x))+","+formatter(y.invert(d[id].y))+")");
         })
         tooltip.html(txt.join("<br/>"));
         tooltip.style({"display": "block",
@@ -440,7 +440,7 @@ var width = $(window).width() - 60,
     height = 400,
     margin = {top: 40, right: 40, bottom: 80, left: 90},
     xLab = "samples",
-    yLab = "expression";
+    yLab = "value";
 
 if(width>768)
   width = Math.floor(width/2);
@@ -561,8 +561,8 @@ function boxplot(rows,cols,data,groups){
 var width = $(window).width() - 60,
     height = 400,
     margin = {top: 40, right: 40, bottom: 80, left: 90},
-    xLab = "genes",
-    yLab = "expression",
+    xLab = "variables",
+    yLab = "value",
     maxData = d3.max([].concat.apply([], data)),
     minData = d3.min([].concat.apply([], data));
 
@@ -616,7 +616,7 @@ var color = d3.scale.category10();
         .attr("d","M"+margin.left+",0h"+width+"v"+(margin.top+height+margin.bottom)+"h"+(-width)+"Z")
 
   defs.append("clipPath")
-      .attr("id","gene-clip")
+      .attr("id","variable-clip")
       .append("path")
         .attr("d","M"+(-x.rangeBand())+",-4h"+x.rangeBand()*3+"v"+(height+8)+"h"+(-x.rangeBand()*3)+"Z")
 
@@ -645,11 +645,11 @@ var color = d3.scale.category10();
   var slider = sliderparent.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var boxes = slider.selectAll("g.gene")	   
+  var boxes = slider.selectAll("g.variable")	   
         .data(rows)
       .enter().append("g")
-        .attr("class","gene")
-        .attr("clip-path", "url(#gene-clip)")
+        .attr("class","variable")
+        .attr("clip-path", "url(#variable-clip)")
         .attr("transform", function(d) { return "translate(" +  x(d)  + ",0)"; } )
         .each(function(d,i){
     if(groups){

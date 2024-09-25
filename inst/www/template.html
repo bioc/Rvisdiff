@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Differential Expression</title>
+<!--BioinfoUSAL/Rvisdiff-->
+<title>Differential Test</title>
 <link rel="stylesheet" type="text/css" href="css/responsee.css">
 <link rel="stylesheet" type="text/css" href="css/datatables.css">
 <link rel="stylesheet" type="text/css" href="css/select.datatables.css">
@@ -30,21 +31,21 @@
 </div>
 <div class="text-center" id="information"></div>
 <table id="table" class="display" cellspacing="0" width="100%"></table>
-<p class="caption"><b>Figure 1</b> (top-left) Volcano plot of differential expression results. It shows the log2 scaled fold change (x axis) and the minus log10 p-value (y axis) of each gene in the differential expression analysis. Genes with a significant expression change are highlighted as red dots. <b>Figure 2</b> (top-right) MA of differential expression results. It shows the log2 scaled mean of expression (x axis) and the log2 scaled fold change (y axis) of each gene in the differential expression analysis. Genes with a significative expression change are highlighted as red dots. <b>Table 1</b> Summary of differential expression analysis.</p>
+<p class="caption"><b>Figure 1</b> (top-left) Volcano plot of differential test results. It shows the log2 scaled fold change (x axis) and the minus log10 p-value (y axis) of each variable in the differential test analysis. Variables with a significant change are highlighted as red dots. <b>Figure 2</b> (top-right) MA of differential results. It shows the log2 scaled mean of values (x axis) and the log2 scaled fold change (y axis) of each variable in the differential analysis. Variables with a significant change are highlighted as red dots. <b>Table 1</b> Summary of differential test analysis.</p>
 <div class="cpmgraphs hidden">
 <div class="s-12 m-12 l-6">
 <h4 class="text-center">Line chart</h4>
 <div id="linechart" class="graph"></div>
-<p class="caption"><b>Figure 3</b> Line chart which shows the expression value (normalized as CPMs) of selected genes for each sample<span class="hidden first-genes"> (Showing only 100 first genes)</span>.</p>
+<p class="caption"><b>Figure 3</b> Line chart which shows the normalized value of selected variables for each sample.<span class="hidden first-variables"> (Showing only 100 first variables)</span>.</p>
 </div>
 <div class="s-12 m-12 l-6">
 <h4 class="text-center">Boxplot</h4>
 <div id="boxplot" class="graph"></div>
-<p class="caption"><b>Figure 4</b> Boxplot which shows the expression value distribution (normalized as CPMs) of selected genes in each group of samples defined<span class="hidden first-genes"> (Showing only 100 first genes)</span>.</p>
+<p class="caption"><b>Figure 4</b> Boxplot which shows the normalized value distribution of selected variables in each group of samples defined.<span class="hidden first-variables"> (Showing only 100 first variables)</span>.</p>
 </div>
 <h4 class="text-center">Heatmap</h4>
 <div id="heatmap" class="graph"></div>
-<p class="caption"><b>Figure 5</b> Heatmap of expression values (normalized as CPMs) of selected genes in each sample<span class="hidden first-genes"> (Showing only 100 first genes)</span>.</p>
+<p class="caption"><b>Figure 5</b> Heatmap of normalized values of selected variables in each sample<span class="hidden first-variables"> (Showing only 100 first variables)</span>.</p>
 </div>
 </div>
       </section>

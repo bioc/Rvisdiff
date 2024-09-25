@@ -1,5 +1,5 @@
 DEreport <- function(DE, counts = NULL, groups = NULL,
-    cutoff = 0.05, normalized = NULL, genes = NULL, pvalue = NULL,
+    cutoff = 0.05, normalized = NULL, variables = NULL, pvalue = NULL,
     padj = NULL, stat = NULL, baseMean = NULL, log2FoldChange = NULL,
     directory = "DEreport"){
 
@@ -15,10 +15,17 @@ DEreport <- function(DE, counts = NULL, groups = NULL,
     if(identical(DE,FALSE)){
         return(invisible(NULL))
     }else{
-        if(!is.null(genes)){
-            rownames(DE) <- DE[,genes]
-            rownames(counts) <- counts[,genes]
-            counts <- data.matrix(counts[,-which(genes==colnames(counts))])
+        DEID <- NULL
+        if(!is.null(variables)){
+            if(variables %in% colnames(DE)){
+                rownames(DE) <- DE[,variables]
+                DEID <- variables
+            }
+            if(variables %in% colnames(counts)){
+                rownames(counts) <- counts[,variables]
+                counts <- data.matrix(counts[,-which(
+                    variables==colnames(counts))])
+            }
         }
         for(value in c("pvalue","padj","stat","baseMean","log2FoldChange")){
             value0 <- get0(value)
@@ -26,11 +33,12 @@ DEreport <- function(DE, counts = NULL, groups = NULL,
                 colnames(DE)[colnames(DE)==value0] <- value
             }
         }
-        createReport(DE, counts, groups, cutoff, normalized, directory)
+        createReport(DE, counts, groups, cutoff, normalized, directory, DEID)
     }
 }
 
-createReport <- function(DE, counts, groups, cutoff, normalized, directory){
+createReport <- function(DE, counts, groups, cutoff, normalized, directory,
+        DEID = NULL){
     create_directory(directory)
 
     if(!inherits(DE,'data.frame')){
@@ -46,12 +54,18 @@ createReport <- function(DE, counts, groups, cutoff, normalized, directory){
         DE[[p]][is.nan(DE[[p]])] <- NA
     }
 
-    genes <- rownames(DE)
-    if(sum(duplicated(genes))){
-        warning("DE: some gene names are duplicated")
+    variables <- rownames(DE)
+    if(sum(duplicated(variables))){
+        warning("DE: some variable names are duplicated")
     }
-    if(!"genes" %in% colnames(DE)){
-        DE <- cbind(genes=genes,DE)
+
+    if(is.null(DEID)){
+        DE <- cbind(RvisdiffVariablesID=variables,DE)
+        if(!("ID" %in% colnames(DE))){
+            colnames(DE)[1] <- "ID"
+        }else if(!("Names" %in% colnames(DE))){
+            colnames(DE)[1] <- "Names"
+        }
     }
 
     CPM <- NULL
@@ -61,9 +75,9 @@ createReport <- function(DE, counts, groups, cutoff, normalized, directory){
             groups <- groups[order(groups)]
         }
         if(normalized){
-            CPM <- counts[genes,]
+            CPM <- counts[variables,]
         }else{
-            CPM <- edgeR::cpm(counts[genes,])
+            CPM <- edgeR::cpm(counts[variables,])
         }
     }
 
@@ -323,6 +337,7 @@ metaIndex <- function(nav,directory){
     nav <- paste0("<li><a href=\"", nav, "/index.html\">",
         nav, "</a></li>", collapse="")
     html <- sub("<!--nav-->",paste0("<ul>",nav,"</ul>"),html)
+    html <- sub("<!--year-->",format(Sys.Date(),"%Y"),html)
 
     dir.create(file.path(directory,"css"),FALSE)
     for(i in c(5,6)){
@@ -376,7 +391,19 @@ tableJSON <- function(x){
 
 create_directory <- function(directory){
     if(file.exists(directory)){
-        unlink(directory, recursive = TRUE)
+        errormsg <- paste0("directory: '",directory,"' already exists")
+        indexfile <- file.path(directory, "index.html")
+        if(file.exists(indexfile)){
+            content <- scan(file = indexfile, what = character(0),
+                sep = "\n", quiet = TRUE)
+            if(sum(content=="<!--BioinfoUSAL/Rvisdiff-->")==1){
+                unlink(directory, recursive = TRUE)
+            }else{
+                stop(errormsg)
+            }
+        }else{
+            stop(errormsg)
+        }
     }
     dir.create(directory)
 }

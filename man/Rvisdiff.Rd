@@ -1,10 +1,10 @@
 \docType{package}
 \name{Rvisdiff}
 \alias{Rvisdiff}
-\title{Rvisdiff: Interactive Graphs for Differential Expression}
+\title{Rvisdiff: Interactive Graphs for Differential Test}
 \description{
 Rvisdiff creates a muti-graph web page which allows the interactive exploration
-of differential expression results. The graphical web interface presents results
+of differential test results. The graphical web interface presents results
 as a table which is integrated with five interactive graphs: MA-plot, volcano
 plot, box plot, lines plot and cluster heatmap. Graphical aspect and information
 represented in the graphs can be customized by means of user controls. Final
@@ -14,7 +14,7 @@ graphics can be exported as PNG format.
 The main function is:
 \itemize{
 \item \code{\link{DEreport}} - produce interactive graphs of the given
-differential expression results
+differential test results
 }
 
 For detailed information on usage, see the package vignette, by typing
