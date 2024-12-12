@@ -19,6 +19,7 @@ DEreport <- function(DE, counts = NULL, groups = NULL,
         if(!is.null(variables)){
             if(variables %in% colnames(DE)){
                 rownames(DE) <- DE[,variables]
+                DE <- DE[,c(variables,colnames(DE)[colnames(DE)!=variables])]
                 DEID <- variables
             }
             if(variables %in% colnames(counts)){
@@ -382,7 +383,7 @@ tableJSON <- function(x){
     }else{
         aux <- format(x,trim=TRUE,justify="none",scientific=FALSE,digits=3)
     }
-    aux[aux=="NA"] <- "null"
+    aux[aux=="NA" | aux=="Inf" | aux=="-Inf"] <- "null"
     aux <- apply(aux,1,function(x) paste0('[',paste0(x,collapse=','),']'))
     aux <- paste0(c(colNames,aux), collapse = ",")
     json <- paste0("[", aux, "]", collapse = "")

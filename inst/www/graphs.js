@@ -155,11 +155,7 @@ function filter_cpms(filter) {
         data = indices.map(function(d){ return cpms[d]; }),
         dicGroups = groups ? groups.map(function(d){ return groupnames.indexOf(d); }) : false;
     linechart(frows,samples,data,dicGroups);
-    var boxdata = data;
-    if(!normalized){
-      boxdata = data.map(function(d){ return d.map(function(dd){ return Math.log(dd+1)/Math.log(2); }) });
-    }
-    boxplot(frows,samples,boxdata,dicGroups);
+    boxplot(frows,samples,data,dicGroups,normalized);
 
     filter = filter.sort(function(a,b){ return a[idx.log2FC]-b[idx.log2FC]; });
     indices = filter.map(function(d){ return rows.indexOf(d[idx.variables]); }).filter(function(d){ return d!=-1; });
@@ -557,13 +553,19 @@ var lineFunction = d3.svg.line()
   pngExportButton(div,['png','svg'],"LinesDiagram");
 }
 
-function boxplot(rows,cols,data,groups){
+function boxplot(rows,cols,data,groups,normalized){
 var width = $(window).width() - 60,
     height = 400,
     margin = {top: 40, right: 40, bottom: 80, left: 90},
     xLab = "variables",
-    yLab = "value",
-    maxData = d3.max([].concat.apply([], data)),
+    yLab = "value";
+
+if(!normalized){
+  data = data.map(function(d){ return d.map(function(dd){ return Math.log(dd+1)/Math.log(2); }) });
+  yLab = "log2 value";
+}
+
+var maxData = d3.max([].concat.apply([], data)),
     minData = d3.min([].concat.apply([], data));
 
 if(width>768)
