@@ -1,11 +1,11 @@
 Package: Rvisdiff
 Type: Package
-Version: 1.3.1
-Date: 2024-09-16
+Version: 1.7.1
+Date: 2025-10-17
 Title: Interactive Graphs for Differential Expression
 Description: Creates a muti-graph web page which allows the interactive exploration of differential analysis tests. The graphical web interface presents results as a table which is integrated with five interactive graphs: MA-plot, volcano plot, box plot, lines plot and cluster heatmap. Graphical aspect and information represented in the graphs can be customized by means of user controls. Final graphics can be exported as PNG format.
 License: GPL-2 | GPL-3
-Depends: R (>= 4.4.0)
+Depends: R (>= 4.5.0)
 Imports: edgeR, utils
 Suggests: knitr, rmarkdown, DESeq2, limma, SummarizedExperiment, airway, BiocStyle, matrixTests, BiocManager
 VignetteBuilder: knitr

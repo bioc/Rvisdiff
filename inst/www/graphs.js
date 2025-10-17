@@ -46,7 +46,8 @@ var groups = false,
     rows = false,
     cols = false,
     plotpos = false,
-    variables = false,
+    variables = [],
+    selectedvariables = false,
     idx = {
       variables: 0,
       expMean: null,
@@ -79,6 +80,10 @@ window.onload = function(){
   }
   results = json.DE;
   cols = results.shift();
+  results.forEach(function(d,i){
+    variables.push(d[0]);
+    d[0] = i;
+  });
   rows = results.map(function(d){ return d[0]; });
   d3.keys(idx).forEach(function(n,i){
     if(i)
@@ -100,7 +105,7 @@ window.onload = function(){
 
 window.onresize = function(){
   render_plots();
-  filter_cpms(variables);
+  filter_cpms(selectedvariables);
 }
 
 function render_plots(){
@@ -170,12 +175,12 @@ function displayTable(sel, data, cols){
 
       selectableTable(sel, data, cols, idx.pvalue+1,
         function(table){
-          variables = table.rows( { selected: true } ).data();
-          filter_cpms(variables);
+          selectedvariables = table.rows( { selected: true } ).data();
+          filter_cpms(selectedvariables);
         });
 
       sel.find('tbody').on("mouseover", "tr", function(){
-        var variable = $(this).find('td:nth-child(2)').text(),
+        var variable = $(this).attr("dataid"),
             pos = plotpos.filter(function(d){ return d.variable==variable; })[0];
         ['volcano','maplot'].forEach(function(d){
           var marker = d3.select("div#"+d+" .marker");
@@ -211,13 +216,22 @@ function displayTable(sel, data, cols){
               }
               return data;
             },
-            targets: '_all'
+            targets: cols.map(function(d,i){ return i+1; }).filter(function(d){ return d<1; })
+        });
+      columnDefs.push({
+            render: function (data, type, row) {
+              return variables[+data];
+            },
+            targets: 1
         });
 
       var table = sel.DataTable({
         data: data,
         columns: preparedCols,
         columnDefs: columnDefs,
+        createdRow: function( row, data, dataIndex ) {
+          $(row).attr('dataid', data[0]);
+        },
         dom: 'Blftp',
         buttons: [
             {
@@ -357,7 +371,7 @@ var yAxis = d3.svg.axis()
       if(matches.length){
         var txt = [];
         matches.forEach(function(d){
-          txt.push(d.variable+" ("+formatter(x.invert(d[id].x))+","+formatter(y.invert(d[id].y))+")");
+          txt.push(variables[+d.variable]+" ("+formatter(x.invert(d[id].x))+","+formatter(y.invert(d[id].y))+")");
         })
         tooltip.html(txt.join("<br/>"));
         tooltip.style({"display": "block",
@@ -582,7 +596,7 @@ var color = d3.scale.category10();
 
   var xAxis = d3.svg.axis()
                 .scale(x)
-                .tickFormat(function(d){ return d; })
+                .tickFormat(function(d){ return variables[+d]; })
                 .orient("bottom");
 
   var y = d3.scale.linear()
@@ -1044,7 +1058,7 @@ function heatmap(rows,cols,data,metadata,scaled){
           var col = Math.floor(x.invert(d3.mouse(this)[0]));
           var row = Math.floor(y.invert(d3.mouse(this)[1]));
           var label = formatter(matrix.data[row*cols + col]);
-          tooltip.html("row: "+matrix.rows[row]+"<br/>col: "+matrix.cols[col]+"<br/>value: "+label);
+          tooltip.html("row: "+variables[+matrix.rows[row]]+"<br/>col: "+matrix.cols[col]+"<br/>value: "+label);
           tooltip.style({"left":d3.mouse(divHeatmap.node())[0]+10+"px","top":d3.mouse(divHeatmap.node())[1]+10+"px"});
         })
         .on("mouseleave",function(){ 
@@ -1170,7 +1184,7 @@ function heatmap(rows,cols,data,metadata,scaled){
 
     var xAxis = d3.svg.axis()
     .scale(x)
-    .tickFormat(String)
+    .tickFormat(orient=="right" ? function(d){ return variables[+d]; } :String)
     .orient(orient);
 
     svg.call(xAxis).select("path.domain").remove();

@@ -52,7 +52,6 @@ wilcox <- data.frame(genes = rownames(countdata), statistic = stat,
     expMean = rowMeans(countdata), log2FC = log2FoldChange)
 normalized <- edgeR::cpm(countdata)
 normalized <- as.data.frame(normalized)
-normalized$genes <- rownames(normalized)
 DEreport(wilcox, NULL, coldata$dex, normalized = normalized, variables="genes",
 pvalue="pValue", padj = "pAdjust", stat = "statistic",
 baseMean="expMean", log2FoldChange="log2FC")
