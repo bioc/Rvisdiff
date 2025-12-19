@@ -10,10 +10,6 @@ DEreport <- function(DE, counts = NULL, groups = NULL,
         normalized <- FALSE
     }
 
-    if(nrow(counts)!=nrow(DE)){
-        stop("counts: must match with DE")
-    }
-
     DE <- handleDEbyClass(DE, counts, groups, cutoff, normalized, directory)
 
     if(identical(DE,FALSE)){
@@ -25,6 +21,11 @@ DEreport <- function(DE, counts = NULL, groups = NULL,
                 rownames(DE) <- DE[,variables]
                 DE <- DE[,c(variables,colnames(DE)[colnames(DE)!=variables])]
                 DEID <- variables
+            }
+            if(variables %in% colnames(counts)){
+                rownames(counts) <- counts[,variables]
+                counts <- data.matrix(counts[,-which(
+                    variables==colnames(counts))])
             }
         }
         for(value in c("pvalue","padj","stat","baseMean","log2FoldChange")){
@@ -54,8 +55,13 @@ createReport <- function(DE, counts, groups, cutoff, normalized, directory,
         DE[[p]][is.nan(DE[[p]])] <- NA
     }
 
+    variables <- rownames(DE)
+    if(sum(duplicated(variables))){
+        warning("DE: some variable names are duplicated")
+    }
+
     if(is.null(DEID)){
-        DE <- cbind(RvisdiffVariablesID=as.character(rownames(DE)),DE)
+        DE <- cbind(RvisdiffVariablesID=variables,DE)
         if(!("ID" %in% colnames(DE))){
             colnames(DE)[1] <- "ID"
         }else if(!("Names" %in% colnames(DE))){
@@ -70,9 +76,9 @@ createReport <- function(DE, counts, groups, cutoff, normalized, directory,
             groups <- groups[order(groups)]
         }
         if(normalized){
-            CPM <- counts
+            CPM <- counts[variables,]
         }else{
-            CPM <- edgeR::cpm(counts)
+            CPM <- edgeR::cpm(counts[variables,])
         }
     }
 
